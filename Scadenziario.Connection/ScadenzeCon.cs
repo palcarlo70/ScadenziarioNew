@@ -25,7 +25,6 @@ namespace Scadenziario.Connection
             base.SetParameter(cmd, "Gruppo", DbType.Int32, ParameterDirection.Input, (object)idVoce ?? DBNull.Value);
 
 
-
             cmd.CommandType = CommandType.StoredProcedure;
 
             var lst = base.GetDataSet(cmd);
