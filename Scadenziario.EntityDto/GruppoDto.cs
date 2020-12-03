@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace Scadenziario.EntityDto
 {
-    public class Class1
+    public class GruppoDto
     {
+        public int IdGruppo { get; set; }
+        public string Nome { get; set; }
     }
 }

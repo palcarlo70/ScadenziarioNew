@@ -69,12 +69,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LibreriaPDF\LibreriaPDF.csproj">
-      <Project>{a02bfef3-c365-489b-b9be-c5c820b58a70}</Project>
-      <Name>LibreriaPDF</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

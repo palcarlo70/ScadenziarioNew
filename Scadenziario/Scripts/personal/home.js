@@ -1,9 +1,42 @@
-﻿
+﻿$.fn.datepicker.defaults.language = 'it';
+$('.datepicker').datepicker();
+
+$(function () {
+    
+    var d = new Date();
+
+    
+
+    //var output = (day < 10 ? '0' : '') + day + '/' +
+    //    (month < 10 ? '0' : '') + month + '/' +        
+    //    d.getFullYear();
+
+    var date = new Date();
+    var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+    var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+
+    var month = firstDay.getMonth() + 1;
+    var day = firstDay.getDate();
+
+    var output = (day < 10 ? '0' : '') + day + '/' +
+        (month < 10 ? '0' : '') + month + '/' +
+        d.getFullYear();
+
+    $("#txtDataDa").val(output);
+
+    month = lastDay.getMonth() + 1;
+    day = lastDay.getDate();
+
+    output = (day < 10 ? '0' : '') + day + '/' +
+        (month < 10 ? '0' : '') + month + '/' +
+        d.getFullYear();
+
+    $("#txtDataA").val(output);
 
 
+});
 
-
-function getAcquistiRda(IdAcquisto) {
+function getVoci(IdAcquisto) {
     //noDetArt = popolo la griglia per gli accessori o per altri eventi che specifico
 
     $("#lblNumRecordAcquisti").html(0);

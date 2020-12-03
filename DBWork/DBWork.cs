@@ -371,7 +371,7 @@ namespace DBAccess
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }
