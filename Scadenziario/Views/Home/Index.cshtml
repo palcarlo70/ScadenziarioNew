@@ -46,7 +46,7 @@
                                 <div class="input-group">
                                     <input type="text" name="criteria" class="form-control" placeholder="Ricerca Libera" id="txtRicerca">
                                     <div class="input-group-btn">
-                                        <button class="btn btn-primary" onclick="getMateriali(null, null,'dtGridMateriali',0)"><i class="glyphicon glyphicon-search"></i></button>
+                                        <button class="btn btn-primary" onclick="getVoci()"><i class="glyphicon glyphicon-search"></i></button>
                                     </div>
                                 </div>
                             </div>
@@ -55,7 +55,7 @@
                 <input type="hidden" id="hdOrdinamentoMat" />
                 <input type="hidden" id="hdOrdinamentoMatDesc" />
                 <div class="panel-body" style="height: 327px; overflow-y: auto; padding:0px;">
-                    <table class="table  table-striped table-bordered dt-responsive nowrap" id="dtGridMateriali" style="font-size: 9px !important;">
+                    <table class="table  table-striped table-bordered dt-responsive nowrap" id="dtGridVoci" style="font-size: 9px !important;">
                         <thead>
                             <tr style="font-size: 9pt !important;">
                                 <td class="text-center"><a href="#" style="white-space: pre-line" onClick="getVoci(0, 'Descrizione')">Descrizione <i id="iiDescrizione" class="fa fa-arrow-circle-down Ordinamento" aria-hidden="true"></i></a></td>
@@ -77,13 +77,13 @@
             <div class="panel panel-default">
                 <div class="panel-heading " style=" height: 55px;">
                     <div class="row">
-                        <h2 class="panel-title padFix">Calendario <span class="badge"><label id="lblNumRecord" style="margin-top:5px;">0</label></span></h2>
+                        <h2 class="panel-title padFix">Calendario <span class="badge"><label id="lblNumRecordGiorni" style="margin-top:5px;">0</label></span></h2>
                     </div>
                 </div>
                 <input type="hidden" id="hdOrdinamentoMat" />
                 <input type="hidden" id="hdOrdinamentoMatDesc" />
                 <div class="panel-body" style="        height: 327px;        overflow-y: auto;         padding: 0px;">
-                    <table class="table  table-striped table-bordered dt-responsive nowrap" id="dtGridVoci" style="font-size: 9px !important;">
+                    <table class="table  table-striped table-bordered dt-responsive nowrap" id="dtGridVociCompresse" style="font-size: 9px !important;">
                         <thead>
                             <tr style="font-size: 9pt !important;">                                
                                 <td class="text-center"><a href="#" onClick="getVoci(0, 'Descrizione')">Descrizione <i id="iiDescrizione" class="fa fa-arrow-circle-down Ordinamento" aria-hidden="true"></i></a></td>

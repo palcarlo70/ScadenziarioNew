@@ -56,7 +56,7 @@ namespace Scadenziario.Controllers
             ClassiComuni clCom = new ClassiComuni();
             Connection.ScadenzeCon conn = new Scadenziario.Connection.ScadenzeCon("System.Data.SqlClient", clCom.ConnectDbpUniversal);
 
-            List<EntityDto.VociDto> lst = conn.GetVoci(idVoce,gruppo,datDa,datAa,descri,evaso,daEvadere);
+            EntityDto.VociGrigliaDto lst = conn.GetVoci(idVoce,gruppo,datDa,datAa,descri,evaso,daEvadere);
 
             return Content(JsonConvert.SerializeObject(lst, _jsonSetting), "application/json");
         }

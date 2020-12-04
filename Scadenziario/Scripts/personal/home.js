@@ -4,10 +4,10 @@ $('.datepicker').datepicker();
 
 
 $(function () {
-    
+
     var d = new Date();
 
-    
+
 
     //var output = (day < 10 ? '0' : '') + day + '/' +
     //    (month < 10 ? '0' : '') + month + '/' +        
@@ -43,6 +43,7 @@ $(function () {
         }
     });
 
+    getVoci();
 });
 
 function checkFiltri() {
@@ -54,7 +55,7 @@ function popolaGruppi() {
     var f = 1;
 
     $.ajax({
-        url: "GetGruppi",
+        url: "home/GetGruppi",
         type: "POST",
         async: true,
         dataType: "json",
@@ -102,31 +103,38 @@ function popolaGruppi() {
 }
 
 
-function getVoci(IdAcquisto) {
+function getVoci(idVoce) {
     //noDetArt = popolo la griglia per gli accessori o per altri eventi che specifico
 
-    $("#lblNumRecordAcquisti").html(0);
+    $("#lblNumRecord").html(0);
+        
+    var grid = "dtGridVoci";
 
-
-    var IdStato = "";
-    var grid = "dtGridAcquisti";
-
-
+    var gruppo = "";
     $("input.filtri:checked").each(function () {
-        IdStato += $(this).attr("id") + ";";
+        gruppo += $(this).attr("id") + ";";
     });
 
-
+    var DataDa = $("#txtDataDa").val();
+    var DataAa = $("#txtDataA").val();
+    var descri = $("#txtRicerca").val();
+    var evaso = null;
+    var daEvadere = null;
+    //var idVoce = null;
+    //GetVoci(int? idVoce, string gruppo, string DataDa, string DataAa, string descri, int? evaso, int? daEvadere)
     $.ajax({
-        url: "../data/GetAcquisti",
+        url: "home/GetVoci",
         type: "POST",
         async: true,
         dataType: "json",
         data: {
-            IdAcquisto: IdAcquisto,
-            IdStato: IdStato,
-            IdArticolo: null,
-            IdFornitore: null
+            idVoce: idVoce,
+            gruppo: gruppo,
+            DataDa: DataDa,
+            DataAa: DataAa,
+            descri: descri,
+            evaso: evaso,
+            daEvadere: daEvadere,
         },
         success: function (value) {
 
@@ -139,111 +147,165 @@ function getVoci(IdAcquisto) {
             var rigap = "";
 
 
-            if (IdAcquisto === undefined || IdAcquisto === null) {
-                $("#" + grid).find("tr:not(:first)").remove();
-                $("#lblNumRecordAcquisti").html(value.length);
+            //if (IdAcquisto === undefined || IdAcquisto === null) {
+            $("#" + grid).find("tr:not(:first)").remove();
+            $("#lblNumRecord").html(value.Voci.length);
 
-                var conta = 0;
-                $.each(value, function (index, pos) {
-                    try {
+            var conta = 0;
+            $.each(value.Voci, function (index, pos) {
+                try {
 
-                        trParo = "<tr class=\"gradeAmat odd text-center rigaSelect" + conta + "\" role=\"row\" style=\"font-size: 10pt !important;\" >";
-                        trDisp = "<tr class=\"gradeAmat odd text-center rigaSelect" + conta + "\" role=\"row\" style=\"font-size: 10pt !important;\">";
+                    trParo = "<tr class=\"gradeAmat odd text-center rigaSelect" + conta + "\" role=\"row\" style=\"font-size: 10pt !important;\" >";
+                    trDisp = "<tr class=\"gradeAmat odd text-center rigaSelect" + conta + "\" role=\"row\" style=\"font-size: 10pt !important;\">";
 
-                        var tr;
+                    var tr;
 
-                        tr = trParo;
+                    tr = trParo;
 
-                        if (index % 2 === 1)
-                            tr = trDisp;
+                    if (index % 2 === 1)
+                        tr = trDisp;
 
-                        rigap = tr + tdCenter + "<a href=\"#\" onClick=\"getAcquistiRda('" + pos.idAcquisto + "')\" >" + pos.Num_Doc + "</a>" + tdCl +
-                            tdCenter + pos.DataOrdineString + tdCl +
-                            tdOp + pos.RagSocFornitore + tdCl +
-                            tdCenter + pos.Stato + tdCl +
-                            tdRight + pos.TotaleStringa + tdCl +
-                            tdCenter + pos.Num_DocRdo + tdCl + "</tr>";
-                        // tdOp + pos.NumFigli + tdCl +
+                    /*
+                     IdVoce = Convert.ToInt32(dr["Id"].ToString()),
+                             IdGruppo = Convert.ToInt32(dr["IdGruppo"].ToString()),
+                             Descrizione = dr["Descrizione"].ToString(),
+                             Gruppo = dr["Nome"].ToString(),
+                             Importo = Convert.ToDecimal(dr["Importo"].ToString()),
+                             ImportoStringa = !dr.IsNull("Importo") ? Convert.ToDecimal(dr["Importo"].ToString()).ToString("C") : "0 €",
+                             Scadenza = !dr.IsNull("Scadenza") ? DateTime.Parse(dr["Scadenza"].ToString()) : (DateTime?)null,
+                             ScadenzaStringa = !dr.IsNull("Scadenza") ? DateTime.Parse(dr["Scadenza"].ToString()).ToString("dd/MM/yy") : string.Empty,
+                             Evaso = Convert.ToInt32(dr["Saldato"].ToString())
+                     */
 
 
-
-                        $("#" + grid + " tbody").append(rigap);
-                        //$("#dtGridMateriali tbody").append(rigap);
-
-                    } catch (e) {
-                        alert(e);
-                    }
-                    conta += 1;
-                });
-            }
-
-            else if (value !== null) {
+                    rigap = tr + tdOp + "<a href=\"#\" onClick=\"getVoci('" + pos.IdVoce + "')\" >" + pos.Descrizione + "</a>" + tdCl +
+                        tdOp + pos.Gruppo + tdCl +
+                        tdCenter + pos.ScadenzaStringa + tdCl +
+                        tdRight + pos.ImportoStringa + tdCl + "</tr>";
+                    // tdOp + pos.NumFigli + tdCl +
 
 
 
-                //$("#btnAddNewOrdine").attr("onclick", "savecreaRadRdo(null,null)");
+                    $("#" + grid + " tbody").append(rigap);
+                    //$("#dtGridMateriali tbody").append(rigap);
 
-                pulisciModRdoRda();
+                } catch (e) {
+                    alert(e);
+                }
+                conta += 1;
+            });
 
-                //popolaStatoAcquisti("ddlStatoRdaRdo");
-                //$("div.ddlStatoRdaRdo select").val("1");
+            grid = "dtGridVociCompresse";
 
-                $("#btnPrintRdaRdo").attr("onclick", "StampaOrdineOfferta(1)");
+            $("#" + grid).find("tr:not(:first)").remove();
+            $("#lblNumRecordGiorni").html(value.VociCompresse.length);
 
-                $("#divTitleRdaRdo").css("background-color", "#7fffd4");
-                $("#lblTitleRdaRdo").html("RICHIESTA DI ACQUISTO:");
+            conta = 0;
+            $.each(value.VociCompresse, function (index, pos) {
+                try {
 
-                $("div.ddlIvaRdaRdo select").val(value.IdIva);
-                $("#hdIdOrdineTipoRdaRdo").val(1);
-                $("#hdIdOrdineRdaRdo").val(value.idAcquisto);
-                $("#hdIdOrdineFornitori").val(value.idCliFor);
-                $('#btnDelOrdine').removeAttr("disabled");
+                    trParo = "<tr class=\"gradeAmat odd text-center rigaSelect" + conta + "\" role=\"row\" style=\"font-size: 10pt !important;\" >";
+                    trDisp = "<tr class=\"gradeAmat odd text-center rigaSelect" + conta + "\" role=\"row\" style=\"font-size: 10pt !important;\">";
 
-                $("div.ddlValutaRda select").val(value.IdValuta);
-                $("#hdValutaSimbolo").val(value.ValutaSimbolo);
+                    var tr;
 
-                $("div.ddlStatoRdaRdo select").val(value.idStato);
-                $("div.ddlModPagamentoRdaRdo select").val(value.idModoPagamento);
-                $("div.ddlConsegnaRdaRdo select").val(value.IdTipoConsegna);
+                    tr = trParo;
 
-                if (value.NoteCortesiaIncludi === 1) $("#ckNotaCortesiaRdaRdo").prop("checked", true); else $("#ckNotaCortesiaRdaRdo").prop("checked", false);
-                $("#txtNoteInGridRdaRdo").val(value.NoteCortesia);
+                    if (index % 2 === 1)
+                        tr = trDisp;
 
-
-                popolaFornitoreRdaRdo(1, value.idCliFor, value.RagSocFornitore, value.Codice, value.Via, value.Citta, value.PROV, value.CAP, value.Email, value.Referente, value.Tel, value.Cell);
-
-                //$("#dtGridArticoliRdaRdo tbody").append(rigap);
+                    /*
+                     public string Giornata { get; set; } 
+        public string Totale { get; set; }
+        public string TolTipString { get; set; }
+                     */
 
 
-                $("#lblNumeroRdaRdo").html(value.Num_Doc);
-
-                /* Imponibile = !dr.IsNull("Totale") ? Convert.ToDecimal(dr["Totale"].ToString()) : (decimal?)null,
-                         ImponibileStringa = !dr.IsNull("Totale") ? Convert.ToDecimal(dr["Totale"].ToString()).ToString("C") : "€ 0",
-                         TotaleIva = !dr.IsNull("Totale") ? Convert.ToDecimal(dr["Totale"].ToString()) : (decimal?)null,
-                         TotaleIvaStringa = !dr.IsNull("Totale") ? Convert.ToDecimal(dr["Totale"].ToString()).ToString("C") : "€ 0",
-                         Totale = !dr.IsNull("Totale") ? Convert.ToDecimal(dr["Totale"].ToString()) : (decimal?)null,
-                         TotaleStringa = !dr.IsNull("Totale") ? Convert.ToDecimal(dr["Totale"].ToString()).ToString("C") : "€ 0",*/
+                    rigap = tr + tdOp + "<a href=\"#\" onClick=\"\" title=\"" + pos.TolTipString + "\" >" + pos.Giornata + "</a>" + tdCl +
+                        tdRight + pos.Totale + tdCl + "</tr>";
+                    
 
 
 
+                    $("#" + grid + " tbody").append(rigap);
+                    
 
-                $("#txtDataOrdineAcquisto").val(value.DataOrdineString);
-                $("#txtNoteRdaRdo").val(value.Note);
-
-
-                $("#divRdoRdaPrintMail").show();
-                $('#myModalRDAcquisto').modal('show');
-
-                GetRichieste("dtGridArticoliRdaRdo", null, value.idAcquisto, null);
-
-                //$("#lblImponibileRdoRda").html(value.ImponibileStringa);
-                //$("#lblImportoIvaRdoRda").html(value.TotaleIvaStringa); $("#lblImportoOrdineRdoRda").html(value.TotaleStringa);
-            } else {
-                alert("Nessun risultato");
-            }
+                } catch (e) {
+                    alert(e);
+                }
+                conta += 1;
+            });
 
 
-        },
+        //}
+
+        //else if (value !== null) {
+
+
+
+        //    //$("#btnAddNewOrdine").attr("onclick", "savecreaRadRdo(null,null)");
+
+        //    pulisciModRdoRda();
+
+        //    //popolaStatoAcquisti("ddlStatoRdaRdo");
+        //    //$("div.ddlStatoRdaRdo select").val("1");
+
+        //    $("#btnPrintRdaRdo").attr("onclick", "StampaOrdineOfferta(1)");
+
+        //    $("#divTitleRdaRdo").css("background-color", "#7fffd4");
+        //    $("#lblTitleRdaRdo").html("RICHIESTA DI ACQUISTO:");
+
+        //    $("div.ddlIvaRdaRdo select").val(value.IdIva);
+        //    $("#hdIdOrdineTipoRdaRdo").val(1);
+        //    $("#hdIdOrdineRdaRdo").val(value.idAcquisto);
+        //    $("#hdIdOrdineFornitori").val(value.idCliFor);
+        //    $('#btnDelOrdine').removeAttr("disabled");
+
+        //    $("div.ddlValutaRda select").val(value.IdValuta);
+        //    $("#hdValutaSimbolo").val(value.ValutaSimbolo);
+
+        //    $("div.ddlStatoRdaRdo select").val(value.idStato);
+        //    $("div.ddlModPagamentoRdaRdo select").val(value.idModoPagamento);
+        //    $("div.ddlConsegnaRdaRdo select").val(value.IdTipoConsegna);
+
+        //    if (value.NoteCortesiaIncludi === 1) $("#ckNotaCortesiaRdaRdo").prop("checked", true); else $("#ckNotaCortesiaRdaRdo").prop("checked", false);
+        //    $("#txtNoteInGridRdaRdo").val(value.NoteCortesia);
+
+
+        //    popolaFornitoreRdaRdo(1, value.idCliFor, value.RagSocFornitore, value.Codice, value.Via, value.Citta, value.PROV, value.CAP, value.Email, value.Referente, value.Tel, value.Cell);
+
+        //    //$("#dtGridArticoliRdaRdo tbody").append(rigap);
+
+
+        //    $("#lblNumeroRdaRdo").html(value.Num_Doc);
+
+        //    /* Imponibile = !dr.IsNull("Totale") ? Convert.ToDecimal(dr["Totale"].ToString()) : (decimal?)null,
+        //             ImponibileStringa = !dr.IsNull("Totale") ? Convert.ToDecimal(dr["Totale"].ToString()).ToString("C") : "€ 0",
+        //             TotaleIva = !dr.IsNull("Totale") ? Convert.ToDecimal(dr["Totale"].ToString()) : (decimal?)null,
+        //             TotaleIvaStringa = !dr.IsNull("Totale") ? Convert.ToDecimal(dr["Totale"].ToString()).ToString("C") : "€ 0",
+        //             Totale = !dr.IsNull("Totale") ? Convert.ToDecimal(dr["Totale"].ToString()) : (decimal?)null,
+        //             TotaleStringa = !dr.IsNull("Totale") ? Convert.ToDecimal(dr["Totale"].ToString()).ToString("C") : "€ 0",*/
+
+
+
+
+        //    $("#txtDataOrdineAcquisto").val(value.DataOrdineString);
+        //    $("#txtNoteRdaRdo").val(value.Note);
+
+
+        //    $("#divRdoRdaPrintMail").show();
+        //    $('#myModalRDAcquisto').modal('show');
+
+        //    GetRichieste("dtGridArticoliRdaRdo", null, value.idAcquisto, null);
+
+        //    //$("#lblImponibileRdoRda").html(value.ImponibileStringa);
+        //    //$("#lblImportoIvaRdoRda").html(value.TotaleIvaStringa); $("#lblImportoOrdineRdoRda").html(value.TotaleStringa);
+        //} else {
+        //    alert("Nessun risultato");
+        //}
+
+
+    },
         failure: function () {
             alert("Failed!");
         }

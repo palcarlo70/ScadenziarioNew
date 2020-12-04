@@ -47,7 +47,7 @@ namespace Scadenziario.Connection
             DateTime? DataAa,
             string descri, int? evaso, int? daEvadere)
         {
-            
+
             var anods = new List<VociDto>();
             var vociGiorni = new List<VociCompresseMeseDto>();
             try
@@ -72,7 +72,8 @@ namespace Scadenziario.Connection
                     meseAa = DataAa.Value.Month;
                     annoAa = DataAa.Value.Year;
                 }
-
+                if (descri.Trim() == "") descri = null;
+                if (gruppo.Trim() == "") gruppo = null;
 
                 DataSet ds = GetVociDs(idVoce, gruppo, giornoDa, meseDa, annoDa, giornoAa, meseAa, annoAa, descri, evaso, daEvadere);
 
@@ -87,7 +88,7 @@ namespace Scadenziario.Connection
                              ImportoStringa = !dr.IsNull("Importo") ? Convert.ToDecimal(dr["Importo"].ToString()).ToString("C") : "0 €",
                              Scadenza = !dr.IsNull("Scadenza") ? DateTime.Parse(dr["Scadenza"].ToString()) : (DateTime?)null,
                              ScadenzaStringa = !dr.IsNull("Scadenza") ? DateTime.Parse(dr["Scadenza"].ToString()).ToString("dd/MM/yy") : string.Empty,
-                             Evaso = Convert.ToInt32(dr["Saldato"].ToString())                             
+                             Evaso = Convert.ToInt32(dr["Saldato"].ToString())
                          }).ToList();
 
 
@@ -127,7 +128,7 @@ namespace Scadenziario.Connection
             vgTt.Voci = anods;
             vgTt.VociCompresse = vociGiorni;
             vgTt.ImportoTot = anods.Sum(c => c.Importo).ToString("C");
-            vgTt.ImportoMedioGiorno = (anods.Sum(c => c.Importo) / Convert.ToDecimal((DataAa - DataDa)?.TotalDays)).ToString("C");
+            vgTt.ImportoMedioGiorno = "0";  if ((Convert.ToDecimal((DataAa - DataDa)?.TotalDays) > 0)) vgTt.ImportoMedioGiorno =  (anods.Sum(c => c.Importo) / Convert.ToDecimal((DataAa - DataDa)?.TotalDays)).ToString("C");
 
             return vgTt;
         }
