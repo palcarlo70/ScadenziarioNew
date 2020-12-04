@@ -32,9 +32,66 @@ $(function () {
         d.getFullYear();
 
     $("#txtDataA").val(output);
-
+    popolaGruppi();
 
 });
+
+function checkFiltri() {
+    getVoci();
+}
+
+
+function popolaGruppi() {
+    var f = 1;
+
+    $.ajax({
+        url: "home/GetGruppi",
+        type: "POST",
+        async: true,
+        dataType: "json",
+        data: {},
+        success: function (value) {
+            //var testo = "<div> <input class=\"form-check-input\" type=\"checkbox\" id=\"ckNoGruppo\" value=\"option3\" onclick=\"checkFiltri(0)\">" +
+            //    " <label class=\"form-check-label\" for=\"inlineCheckbox3\" style=\"color:blue;\">No Categoria</label> </div>";
+            //$("#divGruppi").prepend(testo);
+
+            //testo = "<div> <input class=\"form-check-input\" type=\"checkbox\" id=\"ckFasi\" value=\"option3\" onclick=\"checkFiltri(0)\">" +
+            //    " <label class=\"form-check-label\" for=\"inlineCheckbox3\"  style=\"color:blue;\">Con Fasi</label> </div>";
+            //$("#divGruppi").prepend(testo);
+
+
+
+            var testo = "<div> <input class=\"form-check-input\" type=\"checkbox\" id=\"ckEvasi\" value=\"option3\" onclick=\"checkFiltri(0)\">" +
+                " <label class=\"form-check-label\" for=\"inlineCheckbox3\"  style=\"color:red;\">Evasi</label> </div>";
+            $("#divGruppi").prepend(testo);
+
+            testo = "<div> <input class=\"form-check-input\" type=\"checkbox\" id=\"ckDaEvadere\" value=\"option3\" onclick=\"checkFiltri(0)\">" +
+                " <label class=\"form-check-label\" for=\"inlineCheckbox3\" style=\"color:#56611b;\">Da Evadere</label> </div>";
+            $("#divGruppi").prepend(testo);
+
+            //testo = "<div> <input class=\"form-check-input\" type=\"checkbox\" id=\"ckVenditaMag\" value=\"option3\" onclick=\"checkFiltri(2)\">" +
+            //    " <label class=\"form-check-label\" for=\"inlineCheckbox3\" style=\"color:#56611b;\">Vendita</label> </div>";
+            //$("#divGruppiMag").prepend(testo);
+
+            $.each(value, function (index, pos) {
+                try {
+                    testo = "<div> <input class=\"form-check-input filtri\" type=\"checkbox\" id=\"" + pos.IdGruppo + "\" value=\"option3\"  onclick=\"checkFiltri(0)\">" +
+                        " <label class=\"form-check-label\" for=\"inlineCheckbox3\">" + pos.Nome + "</label> </div>";
+                    $("#divGruppi").prepend(testo);
+
+
+                } catch (e) {
+                    alert(e);
+                }
+            });
+
+        },
+        failure: function () {
+            alert("Failed!");
+        }
+    });
+}
+
 
 function getVoci(IdAcquisto) {
     //noDetArt = popolo la griglia per gli accessori o per altri eventi che specifico
@@ -46,7 +103,7 @@ function getVoci(IdAcquisto) {
     var grid = "dtGridAcquisti";
 
 
-    $("input.filtriAcquisti:checked").each(function () {
+    $("input.filtri:checked").each(function () {
         IdStato += $(this).attr("id") + ";";
     });
 

@@ -43,7 +43,7 @@ namespace Scadenziario.Connection
 
 
             }
-            catch (Exception )
+            catch (Exception ex )
             {
                 return null;
             }

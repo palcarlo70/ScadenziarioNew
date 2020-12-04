@@ -31,7 +31,7 @@ namespace Scadenziario.Controllers
             return View();
         }
 
-        public ContentResult SaveArticoliIngombri(string idArt, string ingXx, string ingYy, string ingZz, string ingPeso)
+        public ContentResult GetGruppi()
         {
             ClassiComuni clCom = new ClassiComuni();
             Connection.GruppoCon conn = new Scadenziario.Connection.GruppoCon("System.Data.SqlClient", clCom.ConnectDbpUniversal);
