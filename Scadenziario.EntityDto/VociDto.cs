@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Scadenziario.EntityDto
 {
-public    class VociDto
+    public class VociDto
     {
         public int IdVoce { get; set; }
         public int IdGruppo { get; set; }
@@ -18,4 +18,23 @@ public    class VociDto
         public string ImportoStringa { get; set; }
         public int Evaso { get; set; }
     }
+
+    public class VociCompresseMeseDto
+    {
+        
+        public string Giornata { get; set; }
+        public string Totale { get; set; }        
+        public string TolTipString { get; set; }
+        
+    }
+
+    public class VociGrigliaDto
+    {
+        public List<VociDto> Voci { get; set; }
+        public List<VociCompresseMeseDto> VociCompresse { get; set; }        
+        public string ImportoTot { get; set; }
+        public string ImportoMedioGiorno { get; set; }
+    }
+
+
 }

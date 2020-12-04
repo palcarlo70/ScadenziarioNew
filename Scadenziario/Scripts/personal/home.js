@@ -1,6 +1,8 @@
 ﻿$.fn.datepicker.defaults.language = 'it';
 $('.datepicker').datepicker();
 
+
+
 $(function () {
     
     var d = new Date();
@@ -34,6 +36,13 @@ $(function () {
     $("#txtDataA").val(output);
     popolaGruppi();
 
+
+    $('input').tooltip({
+        content: function () {
+            return $(this).attr('title');
+        }
+    });
+
 });
 
 function checkFiltri() {
@@ -45,7 +54,7 @@ function popolaGruppi() {
     var f = 1;
 
     $.ajax({
-        url: "home/GetGruppi",
+        url: "GetGruppi",
         type: "POST",
         async: true,
         dataType: "json",

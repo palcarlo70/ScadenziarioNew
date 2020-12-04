@@ -42,14 +42,14 @@ namespace Scadenziario.Connection
             return lst;
         }
 
-        public List<VociDto> GetVoci(int? idVoce, string gruppo,
+        public VociGrigliaDto GetVoci(int? idVoce, string gruppo,
             DateTime? DataDa,
             DateTime? DataAa,
             string descri, int? evaso, int? daEvadere)
         {
-
+            
             var anods = new List<VociDto>();
-
+            var vociGiorni = new List<VociCompresseMeseDto>();
             try
             {
                 //var inDb = new AcquistiDac("System.Data.SqlClient", conAVdb);
@@ -84,20 +84,52 @@ namespace Scadenziario.Connection
                              Descrizione = dr["Descrizione"].ToString(),
                              Gruppo = dr["Nome"].ToString(),
                              Importo = Convert.ToDecimal(dr["Importo"].ToString()),
-                             ImportoStringa= !dr.IsNull("Importo") ? Convert.ToDecimal(dr["Importo"].ToString()).ToString("C") : "0 €",
+                             ImportoStringa = !dr.IsNull("Importo") ? Convert.ToDecimal(dr["Importo"].ToString()).ToString("C") : "0 €",
                              Scadenza = !dr.IsNull("Scadenza") ? DateTime.Parse(dr["Scadenza"].ToString()) : (DateTime?)null,
                              ScadenzaStringa = !dr.IsNull("Scadenza") ? DateTime.Parse(dr["Scadenza"].ToString()).ToString("dd/MM/yy") : string.Empty,
-                             Evaso = Convert.ToInt32(dr["IdGruppo"].ToString()),
-                             
+                             Evaso = Convert.ToInt32(dr["Saldato"].ToString())                             
                          }).ToList();
 
+
+
+                //var oo = (DataAa - DataDa)?.TotalDays;
+                for (int i = 0; i <= (DataAa - DataDa)?.TotalDays; i++)
+                {
+                    var vg = new VociCompresseMeseDto();
+                    vg.Giornata = DataDa?.AddDays(i).ToString("dd-MM");
+                    var lstVoci = anods.Where(c => c.Scadenza == DataDa?.AddDays(i)).ToList();
+                    string totl = "";
+                    decimal totGiorno = 0;
+                    foreach (VociDto v in lstVoci)
+                    {
+                        if (totl != "") totl += Environment.NewLine;
+                        var tit = v.Descrizione.Length <= 10 ? v.Descrizione : v.Descrizione.Substring(0, 10) + "...";
+                        totl += $"{v.ScadenzaStringa} - {tit} - {v.ImportoStringa}";
+                        totGiorno += v.Importo;
+                    }
+                    vg.TolTipString = totl;
+                    vg.Totale = totGiorno > 0 ? totGiorno.ToString("C") : string.Empty;
+
+                    vociGiorni.Add(vg);
+                }
+
+                //Environment.NewLine
 
             }
             catch (Exception ex)
             {
                 return null;
             }
-            return anods;
+
+            VociGrigliaDto vgTt = new VociGrigliaDto();
+            vgTt.Voci = new List<VociDto>();
+            vgTt.VociCompresse = new List<VociCompresseMeseDto>();
+            vgTt.Voci = anods;
+            vgTt.VociCompresse = vociGiorni;
+            vgTt.ImportoTot = anods.Sum(c => c.Importo).ToString("C");
+            vgTt.ImportoMedioGiorno = (anods.Sum(c => c.Importo) / Convert.ToDecimal((DataAa - DataDa)?.TotalDays)).ToString("C");
+
+            return vgTt;
         }
 
     }

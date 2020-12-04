@@ -40,6 +40,25 @@ namespace Scadenziario.Controllers
 
             return Content(JsonConvert.SerializeObject(lst, _jsonSetting), "application/json");
         }
+        
+        public ContentResult GetVoci(int? idVoce, string gruppo, string DataDa, string DataAa, string descri, int? evaso, int? daEvadere)
+        {
+            /*
+             * GetVoci(int? idVoce, string gruppo,
+            DateTime? DataDa,
+            DateTime? DataAa,
+            string descri, int? evaso, int? daEvadere)
+             */
 
+            DateTime? datDa = (DateTime?)null; if (!string.IsNullOrEmpty(DataDa)) datDa=Convert.ToDateTime(DataDa);
+            DateTime? datAa = (DateTime?)null; if (!string.IsNullOrEmpty(DataAa)) datAa = Convert.ToDateTime(DataAa);
+
+            ClassiComuni clCom = new ClassiComuni();
+            Connection.ScadenzeCon conn = new Scadenziario.Connection.ScadenzeCon("System.Data.SqlClient", clCom.ConnectDbpUniversal);
+
+            List<EntityDto.VociDto> lst = conn.GetVoci(idVoce,gruppo,datDa,datAa,descri,evaso,daEvadere);
+
+            return Content(JsonConvert.SerializeObject(lst, _jsonSetting), "application/json");
+        }
     }
 }
