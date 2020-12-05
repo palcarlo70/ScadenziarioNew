@@ -1,4 +1,6 @@
-﻿$.fn.datepicker.defaults.language = 'it';
+﻿//import { htmlimports } from "modernizr";
+
+$.fn.datepicker.defaults.language = 'it';
 $('.datepicker').datepicker();
 
 
@@ -36,13 +38,32 @@ $(function () {
     $("#txtDataA").val(output);
     popolaGruppi();
 
+    //Popolamento combo ANNO
+
+    //$("#ddlMese").append($('<option>').val(1).text('GEN'));
+    //$("#ddlMese").append($('<option>').val(2).text('FEB'));
+    //$("#ddlMese").append($('<option>').val(3).text('MAR'));
+    //$("#ddlMese").append($('<option>').val(4).text('APR'));
+
+
+
+    $("#ddlAnno").append($('<option>').val(d.getFullYear() - 1).text(d.getFullYear() - 1));
+
+    for (i = 0; i < 10; i++) {
+        $("#ddlAnno").append($('<option>').val(d.getFullYear() + i).text(d.getFullYear() + i));
+    }
+    //$("div.ddlAnno select").val("2020");
+    $("div.ddlAnno select").val(d.getFullYear());
+    $("div.ddlMese select").val(month);
+
+    $("#hdDataVoci").val($("div.ddlMese select").val() + '/' + $("div.ddlAnno select").val());
 
     $('input').tooltip({
         content: function () {
             return $(this).attr('title');
         }
     });
-
+    riepilogoAnno();
     getVoci();
 });
 
@@ -103,11 +124,11 @@ function popolaGruppi() {
 }
 
 
-function getVoci(idVoce) {
+function getVoci(idVoce, giorno) {
     //noDetArt = popolo la griglia per gli accessori o per altri eventi che specifico
 
     $("#lblNumRecord").html(0);
-        
+
     var grid = "dtGridVoci";
 
     var gruppo = "";
@@ -115,8 +136,12 @@ function getVoci(idVoce) {
         gruppo += $(this).attr("id") + ";";
     });
 
-    var DataDa = $("#txtDataDa").val();
-    var DataAa = $("#txtDataA").val();
+    var Data = $("#hdDataVoci").val(); //$("div.ddlMese select").val() + '/' + $("div.ddlAnno select").val();
+
+    if (giorno != undefined && giorno != null) { Data = giorno; $("#hdDataVoci").val(giorno);}
+
+    $("#lblPeriodo").html(Data);
+
     var descri = $("#txtRicerca").val();
     var evaso = null;
     var daEvadere = null;
@@ -130,8 +155,7 @@ function getVoci(idVoce) {
         data: {
             idVoce: idVoce,
             gruppo: gruppo,
-            DataDa: DataDa,
-            DataAa: DataAa,
+            Data: Data,
             descri: descri,
             evaso: evaso,
             daEvadere: daEvadere,
@@ -159,35 +183,17 @@ function getVoci(idVoce) {
                     trDisp = "<tr class=\"gradeAmat odd text-center rigaSelect" + conta + "\" role=\"row\" style=\"font-size: 10pt !important;\">";
 
                     var tr;
-
                     tr = trParo;
 
                     if (index % 2 === 1)
                         tr = trDisp;
 
-                    /*
-                     IdVoce = Convert.ToInt32(dr["Id"].ToString()),
-                             IdGruppo = Convert.ToInt32(dr["IdGruppo"].ToString()),
-                             Descrizione = dr["Descrizione"].ToString(),
-                             Gruppo = dr["Nome"].ToString(),
-                             Importo = Convert.ToDecimal(dr["Importo"].ToString()),
-                             ImportoStringa = !dr.IsNull("Importo") ? Convert.ToDecimal(dr["Importo"].ToString()).ToString("C") : "0 €",
-                             Scadenza = !dr.IsNull("Scadenza") ? DateTime.Parse(dr["Scadenza"].ToString()) : (DateTime?)null,
-                             ScadenzaStringa = !dr.IsNull("Scadenza") ? DateTime.Parse(dr["Scadenza"].ToString()).ToString("dd/MM/yy") : string.Empty,
-                             Evaso = Convert.ToInt32(dr["Saldato"].ToString())
-                     */
-
-
                     rigap = tr + tdOp + "<a href=\"#\" onClick=\"getVoci('" + pos.IdVoce + "')\" >" + pos.Descrizione + "</a>" + tdCl +
                         tdOp + pos.Gruppo + tdCl +
                         tdCenter + pos.ScadenzaStringa + tdCl +
                         tdRight + pos.ImportoStringa + tdCl + "</tr>";
-                    // tdOp + pos.NumFigli + tdCl +
-
-
-
-                    $("#" + grid + " tbody").append(rigap);
-                    //$("#dtGridMateriali tbody").append(rigap);
+                    
+                    $("#" + grid + " tbody").append(rigap);                    
 
                 } catch (e) {
                     alert(e);
@@ -223,12 +229,12 @@ function getVoci(idVoce) {
 
                     rigap = tr + tdOp + "<a href=\"#\" onClick=\"\" title=\"" + pos.TolTipString + "\" >" + pos.Giornata + "</a>" + tdCl +
                         tdRight + pos.Totale + tdCl + "</tr>";
-                    
+
 
 
 
                     $("#" + grid + " tbody").append(rigap);
-                    
+
 
                 } catch (e) {
                     alert(e);
@@ -237,80 +243,115 @@ function getVoci(idVoce) {
             });
 
 
-        //}
 
-        //else if (value !== null) {
-
-
-
-        //    //$("#btnAddNewOrdine").attr("onclick", "savecreaRadRdo(null,null)");
-
-        //    pulisciModRdoRda();
-
-        //    //popolaStatoAcquisti("ddlStatoRdaRdo");
-        //    //$("div.ddlStatoRdaRdo select").val("1");
-
-        //    $("#btnPrintRdaRdo").attr("onclick", "StampaOrdineOfferta(1)");
-
-        //    $("#divTitleRdaRdo").css("background-color", "#7fffd4");
-        //    $("#lblTitleRdaRdo").html("RICHIESTA DI ACQUISTO:");
-
-        //    $("div.ddlIvaRdaRdo select").val(value.IdIva);
-        //    $("#hdIdOrdineTipoRdaRdo").val(1);
-        //    $("#hdIdOrdineRdaRdo").val(value.idAcquisto);
-        //    $("#hdIdOrdineFornitori").val(value.idCliFor);
-        //    $('#btnDelOrdine').removeAttr("disabled");
-
-        //    $("div.ddlValutaRda select").val(value.IdValuta);
-        //    $("#hdValutaSimbolo").val(value.ValutaSimbolo);
-
-        //    $("div.ddlStatoRdaRdo select").val(value.idStato);
-        //    $("div.ddlModPagamentoRdaRdo select").val(value.idModoPagamento);
-        //    $("div.ddlConsegnaRdaRdo select").val(value.IdTipoConsegna);
-
-        //    if (value.NoteCortesiaIncludi === 1) $("#ckNotaCortesiaRdaRdo").prop("checked", true); else $("#ckNotaCortesiaRdaRdo").prop("checked", false);
-        //    $("#txtNoteInGridRdaRdo").val(value.NoteCortesia);
-
-
-        //    popolaFornitoreRdaRdo(1, value.idCliFor, value.RagSocFornitore, value.Codice, value.Via, value.Citta, value.PROV, value.CAP, value.Email, value.Referente, value.Tel, value.Cell);
-
-        //    //$("#dtGridArticoliRdaRdo tbody").append(rigap);
-
-
-        //    $("#lblNumeroRdaRdo").html(value.Num_Doc);
-
-        //    /* Imponibile = !dr.IsNull("Totale") ? Convert.ToDecimal(dr["Totale"].ToString()) : (decimal?)null,
-        //             ImponibileStringa = !dr.IsNull("Totale") ? Convert.ToDecimal(dr["Totale"].ToString()).ToString("C") : "€ 0",
-        //             TotaleIva = !dr.IsNull("Totale") ? Convert.ToDecimal(dr["Totale"].ToString()) : (decimal?)null,
-        //             TotaleIvaStringa = !dr.IsNull("Totale") ? Convert.ToDecimal(dr["Totale"].ToString()).ToString("C") : "€ 0",
-        //             Totale = !dr.IsNull("Totale") ? Convert.ToDecimal(dr["Totale"].ToString()) : (decimal?)null,
-        //             TotaleStringa = !dr.IsNull("Totale") ? Convert.ToDecimal(dr["Totale"].ToString()).ToString("C") : "€ 0",*/
-
-
-
-
-        //    $("#txtDataOrdineAcquisto").val(value.DataOrdineString);
-        //    $("#txtNoteRdaRdo").val(value.Note);
-
-
-        //    $("#divRdoRdaPrintMail").show();
-        //    $('#myModalRDAcquisto').modal('show');
-
-        //    GetRichieste("dtGridArticoliRdaRdo", null, value.idAcquisto, null);
-
-        //    //$("#lblImponibileRdoRda").html(value.ImponibileStringa);
-        //    //$("#lblImportoIvaRdoRda").html(value.TotaleIvaStringa); $("#lblImportoOrdineRdoRda").html(value.TotaleStringa);
-        //} else {
-        //    alert("Nessun risultato");
-        //}
-
-
-    },
+        },
         failure: function () {
             alert("Failed!");
         }
     });
 
 
+
+}
+
+
+function riepilogoAnno() {
+    var giorno = '1/' + $("div.ddlMese select").val() + '/' + $("div.ddlAnno select").val();
+
+    $.ajax({
+        url: "home/GetRiepilogoAnnuale",
+        type: "POST",
+        async: true,
+        dataType: "json",
+        data: {
+            giorno: giorno
+        },
+        success: function (value) {
+
+            var trParo = "<tr class=\"gradeA odd text-center\" role=\"row\" style=\"font-size: 10pt !important;\" >";
+            var trDisp = "<tr class=\"gradeA odd text-center\" role=\"row\" style=\"font-size: 10pt !important;\">";
+            var tdOp = "<td class=\"text-left\" style=\"padding: 0 !important; vertical-align: center;\">";
+            var tdCenter = "<td class=\"text-center\" style=\"padding: 0 !important;\">";
+            var tdRight = "<td class=\"text-right\" style=\"padding: 0 !important;\">";
+            var tdCl = "</td>";
+            var rigap = "";
+
+            var grid = "dtGridAnno";
+
+            $("#" + grid).find("tr:not(:first)").remove();
+
+
+            //Carico i titoli della griglia
+            var conta = 0;
+
+            var titolo = "<tr style=\"font-size: 9pt!important; \"> <td class=\"text-center\">Gruppo</td>";
+            $.each(value.Titoli, function (index, pos) {
+                try {
+                    titolo += "<td class=\"text-center\">" + "<a href=\"#\" onClick=\"getVoci(null, '" + pos.Giorno + "')\"  >" + pos.Titolo + "</a>" + "</td>";                   
+
+                } catch (e) {
+                    alert(e);
+                }
+                conta += 1;
+            });
+
+            $("#" + grid + " thead").append(titolo + "</tr>");
+
+
+
+            $("#" + grid).find("tr:not(:first)").remove();
+
+
+            conta = 0;
+            $.each(value.Riepilogo, function (index, pos) {
+                try {
+
+                    trParo = "<tr class=\"text-center\" role=\"row\" style=\"font-size: 10pt !important;\" >";
+                    trDisp = "<tr class=\"text-center\" role=\"row\" style=\"font-size: 10pt !important;\">";
+
+                    if (pos.Tipo == 1) {                          
+                        trParo = "<tr class=\"text-center\" role=\"row\" style=\"font-size: 10pt !important; background-color:#d3fbc6;\" >";
+                        trDisp = "<tr class=\"text-center\" role=\"row\" style=\"font-size: 10pt !important; background-color:#faebd7;\">";                        
+                    }
+
+                    var tr;
+                    tr = trParo;
+                    if (index % 2 === 1)
+                        tr = trDisp;       
+
+
+                    rigap = tr + tdOp + "<b>" + pos.Gruppo + "</b>" +tdCl +
+                        tdOp + pos.Mese1 + tdCl +
+                        tdRight + pos.Mese2 + tdCl +
+                        tdRight + pos.Mese3 + tdCl +
+                        tdRight + pos.Mese4 + tdCl +
+                        tdRight + pos.Mese5 + tdCl +
+                        tdRight + pos.Mese6 + tdCl +
+                        tdRight + pos.Mese7 + tdCl +
+                        tdRight + pos.Mese8 + tdCl +
+                        tdRight + pos.Mese9 + tdCl +
+                        tdRight + pos.Mese10 + tdCl +
+                        tdRight + pos.Mese11 + tdCl +
+                        tdRight + pos.Mese12 + tdCl + "</tr>";
+
+
+
+
+                    $("#" + grid + " tbody").append(rigap);
+
+
+                } catch (e) {
+                    alert(e);
+                }
+                conta += 1;
+            });
+
+
+
+        },
+        failure: function () {
+            alert("Failed!");
+        }
+    });
 
 }

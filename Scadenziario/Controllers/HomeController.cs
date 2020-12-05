@@ -41,7 +41,7 @@ namespace Scadenziario.Controllers
             return Content(JsonConvert.SerializeObject(lst, _jsonSetting), "application/json");
         }
         
-        public ContentResult GetVoci(int? idVoce, string gruppo, string DataDa, string DataAa, string descri, int? evaso, int? daEvadere)
+        public ContentResult GetVoci(int? idVoce, string gruppo, string Data, string descri, int? evaso, int? daEvadere)
         {
             /*
              * GetVoci(int? idVoce, string gruppo,
@@ -50,13 +50,30 @@ namespace Scadenziario.Controllers
             string descri, int? evaso, int? daEvadere)
              */
 
-            DateTime? datDa = (DateTime?)null; if (!string.IsNullOrEmpty(DataDa)) datDa=Convert.ToDateTime(DataDa);
-            DateTime? datAa = (DateTime?)null; if (!string.IsNullOrEmpty(DataAa)) datAa = Convert.ToDateTime(DataAa);
+            DateTime? datDa = (DateTime?)null; if (!string.IsNullOrEmpty(Data)) datDa=Convert.ToDateTime("1/" + Data);
+            var ultimo=System.DateTime.DaysInMonth((int)(datDa?.Year), (int)(datDa?.Month)).ToString();
+
+            DateTime? datAa = (DateTime?)null; datAa = Convert.ToDateTime(ultimo+"/"+ Data);
 
             ClassiComuni clCom = new ClassiComuni();
             Connection.ScadenzeCon conn = new Scadenziario.Connection.ScadenzeCon("System.Data.SqlClient", clCom.ConnectDbpUniversal);
 
+
             EntityDto.VociGrigliaDto lst = conn.GetVoci(idVoce,gruppo,datDa,datAa,descri,evaso,daEvadere);
+
+            return Content(JsonConvert.SerializeObject(lst, _jsonSetting), "application/json");
+        }
+
+        
+        
+        public ContentResult GetRiepilogoAnnuale(string giorno)
+        {           
+            ClassiComuni clCom = new ClassiComuni();
+            Connection.ScadenzeCon conn = new Scadenziario.Connection.ScadenzeCon("System.Data.SqlClient", clCom.ConnectDbpUniversal);
+
+            var data = Convert.ToDateTime(giorno);
+
+            var lst = conn.GetRiepilogoAnnuale(data);
 
             return Content(JsonConvert.SerializeObject(lst, _jsonSetting), "application/json");
         }

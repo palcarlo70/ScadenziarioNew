@@ -36,5 +36,47 @@ namespace Scadenziario.EntityDto
         public string ImportoMedioGiorno { get; set; }
     }
 
+    public class RiepiogoAnnoDto
+    {
+        public string Gruppo { get; set; }
+        public int Tipo { get; set; }
+        public string Mese1 { get; set; }
+        public string Mese2 { get; set; }
+        public string Mese3 { get; set; }
+        public string Mese4 { get; set; }
+        public string Mese5 { get; set; }
+        public string Mese6 { get; set; }
+        public string Mese7 { get; set; }
+        public string Mese8 { get; set; }
+        public string Mese9 { get; set; }
+        public string Mese10 { get; set; }
+        public string Mese11 { get; set; }
+        public string Mese12 { get; set; }
 
+        public decimal Mese1Int { get; set; }
+        public decimal Mese2Int { get; set; }
+        public decimal Mese3Int { get; set; }
+        public decimal Mese4Int { get; set; }
+        public decimal Mese5Int { get; set; }
+        public decimal Mese6Int { get; set; }
+        public decimal Mese7Int { get; set; }
+        public decimal Mese8Int { get; set; }
+        public decimal Mese9Int { get; set; }
+        public decimal Mese10Int { get; set; }
+        public decimal Mese11Int { get; set; }
+        public decimal Mese12Int { get; set; }
+
+    }
+
+    public class TitoliRiepiogoAnnoDto
+    {
+        public string Giorno { get; set; }
+        public string Titolo { get; set; }
+    }
+
+    public class AnnualeTot
+    {
+        public List<RiepiogoAnnoDto> Riepilogo { get; set; }
+        public List<TitoliRiepiogoAnnoDto> Titoli { get; set; }
+    }
 }
