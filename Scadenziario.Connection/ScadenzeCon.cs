@@ -238,5 +238,156 @@ namespace Scadenziario.Connection
             return anno;
         }
 
+
+        #region SALVATAGGIO VOCI E RATE
+
+        
+
+        private string[] InsUpDelRichiesteDs( string descrizione,  decimal? importo,  int idGruppo, int numRate, int cadenza, int giorno, int mese, int anno)
+        {
+            /*         
+        @Cadenza INT = 1-- 1 = mensile 2 = Bimestrale 3 = trimestrale, 4 = Qudrimestrale, 5 = Cimquemestrale, 6 = Semestrale, 12 = Annuale
+             */
+            string[] lst = new string[2];
+            lst[0] = "";
+            lst[1] = "";
+
+            try
+            {
+                DbCommand cmd = CreateCommand("PR_InsRate", true);
+
+               
+                base.SetParameter(cmd, "Importo", DbType.Decimal, ParameterDirection.Input, importo);
+                
+                base.SetParameter(cmd, "Descrizione", DbType.String, ParameterDirection.Input, descrizione);
+               // base.SetParameter(cmd, "Scadenza", DbType.DateTime, ParameterDirection.Input, dataRata);
+
+                base.SetParameter(cmd, "IdGruppo", DbType.Int32, ParameterDirection.Input, idGruppo);
+                base.SetParameter(cmd, "NumRate", DbType.Int32, ParameterDirection.Input, numRate);
+                base.SetParameter(cmd, "Cadenza", DbType.Int32, ParameterDirection.Input, cadenza);
+
+                base.SetParameter(cmd, "Giorno", DbType.Int32, ParameterDirection.Input, giorno);
+                base.SetParameter(cmd, "Mese", DbType.Int32, ParameterDirection.Input, mese);
+                base.SetParameter(cmd, "Anno", DbType.Int32, ParameterDirection.Input, anno);
+
+
+                cmd.CommandType = CommandType.StoredProcedure;
+                //base.CreateCommandNonQuery(cmd, false);
+
+                //var ciccio= base.GetDataSet(cmd); //idRichiesta
+                lst[0] = base.GetDataSet(cmd).Tables[0].Rows[0][0].ToString(); //idRichiesta
+            }
+            catch (Exception e)
+            {
+                lst[1] = e.Message;
+            }
+
+            return lst;
+        }
+
+        public string[] InsUpDelRichieste(VociDto v)
+        {
+            string[] lst = new string[2];
+            try
+            {                
+                int giorno = v.Scadenza.Value.Day;
+                int mese = v.Scadenza.Value.Month;
+                int anno = v.Scadenza.Value.Year;
+
+                lst = InsUpDelRichiesteDs(v.Descrizione,v.Importo,v.IdGruppo,v.NumRate,v.Cadenza,giorno,mese,anno);
+            }
+            catch (Exception e)
+            {
+                lst[1] = e.Message;
+            }
+
+            return lst;
+
+        }
+
+
+        /*
+          [dbo].[PR_UpdVoc1]	
+    @Id INT,
+	@Descrizione NVARCHAR(150),
+	@Importo DECIMAL(18,2),	
+	@Giorno INT,
+	@Mese INT,
+	@Anno INT,
+	@IdGruppo INT,
+	@Saldato INT,
+    @Elimina INT = 1,
+	@ApplicaATutti INT = 1
+         */
+
+        private string[] InsUpVociDs(string descrizione, decimal? importo, int idGruppo, int Saldato, int Elimina, int ApplicaATutti, int giorno, int mese, int anno)
+        {
+            /*         
+        @Cadenza INT = 1-- 1 = mensile 2 = Bimestrale 3 = trimestrale, 4 = Qudrimestrale, 5 = Cimquemestrale, 6 = Semestrale, 12 = Annuale
+             */
+            string[] lst = new string[2];
+            lst[0] = "";
+            lst[1] = "";
+
+            try
+            {
+                DbCommand cmd = CreateCommand("PR_UpdVoc1", true);
+
+
+                base.SetParameter(cmd, "Importo", DbType.Decimal, ParameterDirection.Input, importo);
+
+                base.SetParameter(cmd, "Descrizione", DbType.String, ParameterDirection.Input, descrizione);
+                // base.SetParameter(cmd, "Scadenza", DbType.DateTime, ParameterDirection.Input, dataRata);
+
+                base.SetParameter(cmd, "IdGruppo", DbType.Int32, ParameterDirection.Input, idGruppo);
+
+                base.SetParameter(cmd, "Saldato", DbType.Int32, ParameterDirection.Input, Saldato);
+                base.SetParameter(cmd, "Elimina", DbType.Int32, ParameterDirection.Input, Elimina);
+                base.SetParameter(cmd, "ApplicaATutti", DbType.Int32, ParameterDirection.Input, ApplicaATutti);
+
+                base.SetParameter(cmd, "Giorno", DbType.Int32, ParameterDirection.Input, giorno);
+                base.SetParameter(cmd, "Mese", DbType.Int32, ParameterDirection.Input, mese);
+                base.SetParameter(cmd, "Anno", DbType.Int32, ParameterDirection.Input, anno);
+
+
+                cmd.CommandType = CommandType.StoredProcedure;
+                //base.CreateCommandNonQuery(cmd, false);
+
+                //var ciccio= base.GetDataSet(cmd); //idRichiesta
+                lst[0] = base.GetDataSet(cmd).Tables[0].Rows[0][0].ToString(); //idRichiesta
+            }
+            catch (Exception e)
+            {
+                lst[1] = e.Message;
+            }
+
+            return lst;
+        }
+
+        public string[] InsUpVoci(VociDto v, int elimina, int applicaATutti)
+        {
+            string[] lst = new string[2];
+            try
+            {
+                int giorno = v.Scadenza.Value.Day;
+                int mese = v.Scadenza.Value.Month;
+                int anno = v.Scadenza.Value.Year;
+
+                lst = InsUpVociDs(v.Descrizione, v.Importo, v.IdGruppo,v.Evaso,elimina,applicaATutti,giorno, mese, anno);
+            }
+            catch (Exception e)
+            {
+                lst[1] = e.Message;
+            }
+
+            return lst;
+
+        }
+
+
+        #endregion
+
+
     }
+
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Newtonsoft.Json;
+using Scadenziario.EntityDto;
 using Scadenziario.Models;
 
 namespace Scadenziario.Controllers
@@ -40,8 +41,8 @@ namespace Scadenziario.Controllers
 
             return Content(JsonConvert.SerializeObject(lst, _jsonSetting), "application/json");
         }
-        
-        public ContentResult GetVoci(int? idVoce, string gruppo, string Data, string descri, int? evaso, int? daEvadere)
+
+        public ContentResult GetVoci(int? idVoce, string gruppo, string dataGiorno, string descri, int? evaso, int? daEvadere)
         {
             /*
              * GetVoci(int? idVoce, string gruppo,
@@ -49,25 +50,28 @@ namespace Scadenziario.Controllers
             DateTime? DataAa,
             string descri, int? evaso, int? daEvadere)
              */
+            if (string.IsNullOrEmpty(dataGiorno))
+            {
+                return Content(JsonConvert.SerializeObject(null, _jsonSetting), "application/json");
+            }
+            DateTime? datDa = (DateTime?)null; if (!string.IsNullOrEmpty(dataGiorno)) datDa = Convert.ToDateTime("1/" + dataGiorno);
+            var ultimo = System.DateTime.DaysInMonth((int)(datDa?.Year), (int)(datDa?.Month)).ToString();
 
-            DateTime? datDa = (DateTime?)null; if (!string.IsNullOrEmpty(Data)) datDa=Convert.ToDateTime("1/" + Data);
-            var ultimo=System.DateTime.DaysInMonth((int)(datDa?.Year), (int)(datDa?.Month)).ToString();
-
-            DateTime? datAa = (DateTime?)null; datAa = Convert.ToDateTime(ultimo+"/"+ Data);
+            DateTime? datAa = (DateTime?)null; datAa = Convert.ToDateTime(ultimo + "/" + dataGiorno);
 
             ClassiComuni clCom = new ClassiComuni();
             Connection.ScadenzeCon conn = new Scadenziario.Connection.ScadenzeCon("System.Data.SqlClient", clCom.ConnectDbpUniversal);
 
 
-            EntityDto.VociGrigliaDto lst = conn.GetVoci(idVoce,gruppo,datDa,datAa,descri,evaso,daEvadere);
+            EntityDto.VociGrigliaDto lst = conn.GetVoci(idVoce, gruppo, datDa, datAa, descri, evaso, daEvadere);
 
             return Content(JsonConvert.SerializeObject(lst, _jsonSetting), "application/json");
         }
 
-        
-        
+
+
         public ContentResult GetRiepilogoAnnuale(string giorno)
-        {           
+        {
             ClassiComuni clCom = new ClassiComuni();
             Connection.ScadenzeCon conn = new Scadenziario.Connection.ScadenzeCon("System.Data.SqlClient", clCom.ConnectDbpUniversal);
 
@@ -75,6 +79,81 @@ namespace Scadenziario.Controllers
 
             var lst = conn.GetRiepilogoAnnuale(data);
 
+            return Content(JsonConvert.SerializeObject(lst, _jsonSetting), "application/json");
+        }
+
+        public ContentResult InsUpDelRichieste(string dataRata, string descrizione, string importo, int idGruppo, int numRate, int cadenza)
+        {
+            var clCom = new ClassiComuni();
+            var conn = new Scadenziario.Connection.ScadenzeCon("System.Data.SqlClient", clCom.ConnectDbpUniversal);
+
+            string[] lst = new string[2];
+
+            decimal pre = 0;
+            if (!string.IsNullOrEmpty(importo)) pre = Convert.ToDecimal(importo.Replace(".", ","));
+
+
+            DateTime? dataOrd = string.IsNullOrEmpty(dataRata) ? (DateTime?)null : Convert.ToDateTime(dataRata);
+            try
+            {
+                // popolo loggetto 
+                var a = new VociDto
+                {
+
+                    IdGruppo = idGruppo,
+                    Scadenza = dataOrd,
+                    //ScadenzaStringa= dataRata,
+                    Descrizione = descrizione,
+                    Importo = pre,
+                    NumRate = numRate,
+                    Cadenza = cadenza
+                };
+
+                lst = conn.InsUpDelRichieste(a);
+
+            }
+            catch (Exception ex)
+            {
+                lst[1] = ex.Message;
+            }
+            return Content(JsonConvert.SerializeObject(lst, _jsonSetting), "application/json");
+        }
+        public ContentResult InsUpVoce(string dataRata, string descrizione, string importo, int idGruppo, int numRate, int cadenza, int elimina, int applicaATutti, int evaso)
+        {
+            var clCom = new ClassiComuni();
+            var conn = new Scadenziario.Connection.ScadenzeCon("System.Data.SqlClient", clCom.ConnectDbpUniversal);
+
+            string[] lst = new string[2];
+
+            decimal pre = 0;
+            if (!string.IsNullOrEmpty(importo)) pre = Convert.ToDecimal(importo.Replace(".", ","));
+
+
+            //public string[] InsUpVoci(VociDto v, int elimina, int applicaATutti)
+
+            DateTime? dataOrd = string.IsNullOrEmpty(dataRata) ? (DateTime?)null : Convert.ToDateTime(dataRata);
+            try
+            {
+                // popolo loggetto 
+                var a = new VociDto
+                {
+
+                    IdGruppo = idGruppo,
+                    Scadenza = dataOrd,                    
+                    Descrizione = descrizione,
+                    Importo = pre,
+                    NumRate = numRate,
+                    Cadenza = cadenza,
+                    Evaso= evaso
+                };
+
+                lst = conn.InsUpVoci(a,elimina,applicaATutti);
+
+            }
+            catch (Exception ex)
+            {
+                lst[1] = ex.Message;
+            }
             return Content(JsonConvert.SerializeObject(lst, _jsonSetting), "application/json");
         }
     }

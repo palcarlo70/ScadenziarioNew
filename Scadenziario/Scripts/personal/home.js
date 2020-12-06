@@ -7,9 +7,27 @@ $('.datepicker').datepicker();
 
 $(function () {
 
+    $('input:text.soloNumeriNegativi').keypress(function (e) {
+        if (e.which !== 8 && e.which !== 0 && (e.which < 45 || e.which > 58) && e.which !== 46 && e.which !== 47) {
+            return false;
+        }
+        else if (e.which === 45) {
+            var contr = (this.value.match(new RegExp("-", "g")) || []).length;
+            if (contr > 0) return false;
+        }
+    });
+
+    $('input:text.soloNumeriDecimali').keypress(function (e) {
+        if (e.which !== 8 && e.which !== 0 && (e.which < 48 || e.which > 58) && e.which !== 46 && e.which !== 47) {
+            return false;
+        }
+        //else if (e.which === 45) {
+        //    var contr = (this.value.match(new RegExp("-", "g")) || []).length;
+        //    if (contr > 0) return false;
+        //}
+    });
+
     var d = new Date();
-
-
 
     //var output = (day < 10 ? '0' : '') + day + '/' +
     //    (month < 10 ? '0' : '') + month + '/' +        
@@ -56,6 +74,9 @@ $(function () {
     $("div.ddlAnno select").val(d.getFullYear());
     $("div.ddlMese select").val(month);
 
+    
+    
+
     $("#hdDataVoci").val($("div.ddlMese select").val() + '/' + $("div.ddlAnno select").val());
 
     $('input').tooltip({
@@ -71,9 +92,20 @@ function checkFiltri() {
     getVoci();
 }
 
+function pulisciCombo(ddl) {
+    if (ddl !== undefined && ddl !== null)
+        $("#" + ddl)
+            .find('option')
+            .remove()
+            .end();
+}
 
 function popolaGruppi() {
     var f = 1;
+
+
+    pulisciCombo("ddlGruppoRate");
+    $("#ddlGruppoRate").append($('<option>').val("").text(""));
 
     $.ajax({
         url: "home/GetGruppi",
@@ -82,16 +114,6 @@ function popolaGruppi() {
         dataType: "json",
         data: {},
         success: function (value) {
-            //var testo = "<div> <input class=\"form-check-input\" type=\"checkbox\" id=\"ckNoGruppo\" value=\"option3\" onclick=\"checkFiltri(0)\">" +
-            //    " <label class=\"form-check-label\" for=\"inlineCheckbox3\" style=\"color:blue;\">No Categoria</label> </div>";
-            //$("#divGruppi").prepend(testo);
-
-            //testo = "<div> <input class=\"form-check-input\" type=\"checkbox\" id=\"ckFasi\" value=\"option3\" onclick=\"checkFiltri(0)\">" +
-            //    " <label class=\"form-check-label\" for=\"inlineCheckbox3\"  style=\"color:blue;\">Con Fasi</label> </div>";
-            //$("#divGruppi").prepend(testo);
-
-
-
             var testo = "<div> <input class=\"form-check-input\" type=\"checkbox\" id=\"ckEvasi\" value=\"option3\" onclick=\"checkFiltri(0)\">" +
                 " <label class=\"form-check-label\" for=\"inlineCheckbox3\"  style=\"color:red;\">Evasi</label> </div>";
             $("#divGruppi").prepend(testo);
@@ -100,12 +122,11 @@ function popolaGruppi() {
                 " <label class=\"form-check-label\" for=\"inlineCheckbox3\" style=\"color:#56611b;\">Da Evadere</label> </div>";
             $("#divGruppi").prepend(testo);
 
-            //testo = "<div> <input class=\"form-check-input\" type=\"checkbox\" id=\"ckVenditaMag\" value=\"option3\" onclick=\"checkFiltri(2)\">" +
-            //    " <label class=\"form-check-label\" for=\"inlineCheckbox3\" style=\"color:#56611b;\">Vendita</label> </div>";
-            //$("#divGruppiMag").prepend(testo);
-
             $.each(value, function (index, pos) {
                 try {
+
+                    $("#ddlGruppoRate").append($('<option>').val(pos.IdGruppo).text(pos.Nome));
+
                     testo = "<div> <input class=\"form-check-input filtri\" type=\"checkbox\" id=\"" + pos.IdGruppo + "\" value=\"option3\"  onclick=\"checkFiltri(0)\">" +
                         " <label class=\"form-check-label\" for=\"inlineCheckbox3\">" + pos.Nome + "</label> </div>";
                     $("#divGruppi").prepend(testo);
@@ -128,7 +149,7 @@ function getVoci(idVoce, giorno) {
     //noDetArt = popolo la griglia per gli accessori o per altri eventi che specifico
 
     $("#lblNumRecord").html(0);
-
+    $("#lblTotPeriodo").html("0 €");
     var grid = "dtGridVoci";
 
     var gruppo = "";
@@ -136,26 +157,25 @@ function getVoci(idVoce, giorno) {
         gruppo += $(this).attr("id") + ";";
     });
 
-    var Data = $("#hdDataVoci").val(); //$("div.ddlMese select").val() + '/' + $("div.ddlAnno select").val();
+    var dataGiorno = $("#hdDataVoci").val(); //$("div.ddlMese select").val() + '/' + $("div.ddlAnno select").val();
 
-    if (giorno != undefined && giorno != null) { Data = giorno; $("#hdDataVoci").val(giorno);}
+    if (giorno != undefined && giorno != null) { dataGiorno = giorno; $("#hdDataVoci").val(giorno);}
 
-    $("#lblPeriodo").html(Data);
+    $("#lblPeriodo").html(dataGiorno);
 
     var descri = $("#txtRicerca").val();
     var evaso = null;
     var daEvadere = null;
     //var idVoce = null;
-    //GetVoci(int? idVoce, string gruppo, string DataDa, string DataAa, string descri, int? evaso, int? daEvadere)
     $.ajax({
         url: "home/GetVoci",
         type: "POST",
-        async: true,
+        async: true,  
         dataType: "json",
         data: {
             idVoce: idVoce,
             gruppo: gruppo,
-            Data: Data,
+            dataGiorno: dataGiorno,
             descri: descri,
             evaso: evaso,
             daEvadere: daEvadere,
@@ -173,8 +193,17 @@ function getVoci(idVoce, giorno) {
 
             //if (IdAcquisto === undefined || IdAcquisto === null) {
             $("#" + grid).find("tr:not(:first)").remove();
-            $("#lblNumRecord").html(value.Voci.length);
 
+
+            if (value === null) {
+                OpenAlertmess("Attenzione Errore nella procedura GetVoci");
+                return;
+            }
+
+            //ImportoMedioGiorno
+            
+            $("#lblTotPeriodo").html(value.ImportoTot);
+            $("#lblNumRecord").html(value.Voci.length);
             var conta = 0;
             $.each(value.Voci, function (index, pos) {
                 try {
@@ -188,7 +217,8 @@ function getVoci(idVoce, giorno) {
                     if (index % 2 === 1)
                         tr = trDisp;
 
-                    rigap = tr + tdOp + "<a href=\"#\" onClick=\"getVoci('" + pos.IdVoce + "')\" >" + pos.Descrizione + "</a>" + tdCl +
+
+                    rigap = tr + tdOp + "<a href=\"#\" onClick=\"openEditVoce('" + pos.IdVoce + "')\" >" + pos.Descrizione + "</a>" + tdCl +
                         tdOp + pos.Gruppo + tdCl +
                         tdCenter + pos.ScadenzaStringa + tdCl +
                         tdRight + pos.ImportoStringa + tdCl + "</tr>";
@@ -278,8 +308,8 @@ function riepilogoAnno() {
 
             var grid = "dtGridAnno";
 
-            $("#" + grid).find("tr:not(:first)").remove();
-
+            //$("#" + grid).find("tr:not(:first)").remove();
+            $("#" + grid).find("tr").remove();
 
             //Carico i titoli della griglia
             var conta = 0;
@@ -318,10 +348,17 @@ function riepilogoAnno() {
                     tr = trParo;
                     if (index % 2 === 1)
                         tr = trDisp;       
-
+                    
+                    if (pos.Gruppo === 'Totale') {
+                        tdRight = "<td class=\"text-right\" style=\"padding: 0 !important; color:red; \"> <b>";
+                    } else if (pos.Gruppo === 'ImpDaEvadere') {
+                        tdRight = "<td class=\"text-right\" style=\"padding: 0 !important; color:blue; \"> <b>";
+                    }else {
+                        tdRight = "<td class=\"text-right\" style=\"padding: 0 !important;\">";
+                    }
 
                     rigap = tr + tdOp + "<b>" + pos.Gruppo + "</b>" +tdCl +
-                        tdOp + pos.Mese1 + tdCl +
+                        tdRight + pos.Mese1 + tdCl +
                         tdRight + pos.Mese2 + tdCl +
                         tdRight + pos.Mese3 + tdCl +
                         tdRight + pos.Mese4 + tdCl +
@@ -353,5 +390,12 @@ function riepilogoAnno() {
             alert("Failed!");
         }
     });
+
+}
+
+
+function OpenAlertmess(mess) {
+    $("#lblMessaggioAllert").text(mess);
+    $("#myModalMessageAllert").modal("show");
 
 }

@@ -17,6 +17,8 @@ namespace Scadenziario.EntityDto
         public decimal Importo { get; set; }
         public string ImportoStringa { get; set; }
         public int Evaso { get; set; }
+        public int NumRate { get; set; }
+        public int Cadenza { get; set; }
     }
 
     public class VociCompresseMeseDto
